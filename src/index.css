@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-bg: #0A0A0B;
+  --color-card-bg: #141417;
+}
+
+body {
+  background-color: #0A0A0B;
+  color: #e2e8f0; /* slate-200 */
+}

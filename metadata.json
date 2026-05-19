@@ -1,0 +1,6 @@
+{
+  "name": "Cocrear Lead Gen & Outreach",
+  "description": "Plataforma de generación de leads y automatización de propuestas comerciales para Cocrear.ar. Permite buscar empresas por categoría y ubicación, capturar datos de contacto y gestionar envíos masivos con intervalos de seguridad.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
