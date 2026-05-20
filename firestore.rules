@@ -1,0 +1,94 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // -------------------------------------------------------------------------
+    // GLOBALS
+    // -------------------------------------------------------------------------
+    
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // -------------------------------------------------------------------------
+    // ENTITIES
+    // -------------------------------------------------------------------------
+
+    function isValidLead(data) {
+      return data.keys().hasAll(['id', 'ownerId', 'name', 'address', 'category', 'status', 'createdAt', 'updatedAt'])
+        && data.keys().size() <= 12 // Allow optional socialLinks/website/phone
+        && data.id is string && data.id.size() <= 128
+        && data.ownerId == request.auth.uid
+        && data.name is string && data.name.size() <= 200
+        && data.address is string && data.address.size() <= 500
+        && data.category is string && data.category.size() <= 100
+        && data.status in ['saved', 'contacted', 'interested', 'rejected', 'new'];
+    }
+
+    function isValidCampaign(data) {
+      return data.keys().hasAll(['id', 'ownerId', 'name', 'leadIds', 'status', 'intervalMinutes', 'createdAt', 'updatedAt'])
+        && data.keys().size() <= 10 // Allow template
+        && data.id is string && data.id.size() <= 128
+        && data.ownerId == request.auth.uid
+        && data.name is string && data.name.size() <= 200
+        && data.leadIds is list && data.leadIds.size() <= 1000
+        && data.status in ['draft', 'active', 'completed']
+        && data.intervalMinutes is number && data.intervalMinutes >= 1 && data.intervalMinutes <= 1440;
+    }
+
+    // -------------------------------------------------------------------------
+    // MATCH BLOCKS
+    // -------------------------------------------------------------------------
+
+    match /leads/{leadId} {
+      allow get: if isOwner(existing().ownerId);
+      allow list: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+      
+      allow create: if isSignedIn() && isValidId(leadId) && isValidLead(incoming()) 
+        && incoming().createdAt == request.time 
+        && incoming().updatedAt == request.time;
+      
+      allow update: if isOwner(existing().ownerId) && isValidLead(incoming()) 
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time;
+        
+      allow delete: if isOwner(existing().ownerId);
+    }
+
+    match /campaigns/{campaignId} {
+      allow get: if isOwner(existing().ownerId);
+      allow list: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+      
+      allow create: if isSignedIn() && isValidId(campaignId) && isValidCampaign(incoming())
+        && incoming().createdAt == request.time 
+        && incoming().updatedAt == request.time;
+      
+      allow update: if isOwner(existing().ownerId) && isValidCampaign(incoming())
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time;
+        
+      allow delete: if isOwner(existing().ownerId);
+    }
+
+    // Deny everything else
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

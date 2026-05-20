@@ -1,0 +1,49 @@
+{
+  "entities": {
+    "Lead": {
+      "title": "Lead",
+      "description": "A potential business contact captured from maps or social media.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "name": { "type": "string" },
+        "address": { "type": "string" },
+        "phone": { "type": "string" },
+        "website": { "type": "string" },
+        "category": { "type": "string" },
+        "status": { "type": "string", "enum": ["saved", "contacted", "interested", "rejected"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "ownerId", "name", "category", "status", "createdAt", "updatedAt"]
+    },
+    "Campaign": {
+      "title": "Campaign",
+      "description": "An outreach campaign targeting a list of leads.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "name": { "type": "string" },
+        "leadIds": { "type": "array", "items": { "type": "string" } },
+        "status": { "type": "string", "enum": ["draft", "active", "completed"] },
+        "intervalMinutes": { "type": "number" },
+        "messageTemplate": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "ownerId", "name", "leadIds", "status", "intervalMinutes", "createdAt", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/leads/{leadId}": {
+      "schema": "Lead",
+      "description": "User-specific leads."
+    },
+    "/campaigns/{campaignId}": {
+      "schema": "Campaign",
+      "description": "User-specific marketing campaigns."
+    }
+  }
+}
