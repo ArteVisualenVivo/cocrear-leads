@@ -1,9 +1,8 @@
 {
-  "projectId": "intense-classifier-dwh20",
-  "appId": "1:415772307377:web:0a194fd5d48c0ddd0c1790",
-  "apiKey": "AIzaSyBPldw_rLourLfOoZwvvM2O0bIUnxcZYjk",
-  "authDomain": "intense-classifier-dwh20.firebaseapp.com",
-  "storageBucket": "intense-classifier-dwh20.firebasestorage.app",
-  "messagingSenderId": "415772307377",
-  "measurementId": ""
+  "apiKey": "AIzaSyDWNFgO7X1eWbdgGZk5bftBJny-8WyZne0",
+  "authDomain": "cocrear-lead.firebaseapp.com",
+  "projectId": "cocrear-lead",
+  "storageBucket": "cocrear-lead.firebasestorage.app",
+  "messagingSenderId": "98904166407",
+  "appId": "1:98904166407:web:762ce24a6166f3e5d8daa2"
 }
