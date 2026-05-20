@@ -1,7 +1,7 @@
 import express from "express";
 import path from "path";
 import cors from "cors";
-import { createServer as createViteServer } from "vite";
+// import { createServer as createViteServer } from "vite"; // Dynamic import used inside setupVite for Vercel optimization
 
 const app = express();
 const PORT = 3000;
@@ -27,13 +27,14 @@ app.post("/api/pdf/generate", async (req, res) => {
 
 // Vite Middleware for Dev / Static for Prod
 async function setupVite() {
-  if (process.env.NODE_ENV !== "production") {
+  if (process.env.NODE_ENV !== "production" && process.env.VERCEL !== "1") {
+    const { createServer: createViteServer } = await import("vite");
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",
     });
     app.use(vite.middlewares);
-  } else {
+  } else if (process.env.VERCEL !== "1") {
     const distPath = path.join(process.cwd(), "dist");
     app.use(express.static(distPath));
     app.get("*", (req, res) => {
@@ -42,8 +43,12 @@ async function setupVite() {
   }
 }
 
-setupVite().then(() => {
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+if (process.env.VERCEL !== "1") {
+  setupVite().then(() => {
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`Server running on http://localhost:${PORT}`);
+    });
   });
-});
+}
+
+export default app;

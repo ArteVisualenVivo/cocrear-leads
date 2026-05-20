@@ -1,17 +1,8 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
-
-const firebaseConfig = {
-  apiKey: "AIzaSyCiLjVpvK7avQ7tox3eFXf1wtzMNd-3PZc",
-  authDomain: "cocrear-leads.firebaseapp.com",
-  projectId: "cocrear-leads",
-  storageBucket: "cocrear-leads.firebasestorage.app",
-  messagingSenderId: "851738056892",
-  appId: "1:851738056892:web:cfed39ef7be3ab044858b9"
-};
+import firebaseConfig from '../../firebase-applet-config.json';
 
 const app = initializeApp(firebaseConfig);
-
+export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId || '(default)');
 export const auth = getAuth(app);
-export const db = getFirestore(app);

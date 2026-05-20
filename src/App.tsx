@@ -91,8 +91,16 @@ export default function App() {
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Login failed:', error);
+      if (error.code === 'auth/unauthorized-domain') {
+        toast.error('Dominio no autorizado', {
+          description: 'Este dominio no está en la lista de dominios autorizados de Firebase Auth. Debes agregarlo en la Consola de Firebase.'
+        });
+        console.warn('Para solucionar esto: \n1. Ve a Firebase Console > Authentication > Settings > Authorized domains \n2. Agrega este dominio: ' + window.location.hostname);
+      } else {
+        toast.error('Error al iniciar sesión: ' + error.message);
+      }
     }
   };
 
